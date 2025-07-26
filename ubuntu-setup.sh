@@ -2,7 +2,7 @@
 #
 # Jakob Janzen
 # jakob.janzen80@gmail.com
-# 2025-07-20
+# 2025-07-26
 #
 export CWD="$PWD"
 
@@ -33,125 +33,134 @@ function nala_remove
   done
 }
 
+function sysctl_add
+{
+  grep "$1" /etc/sysctl.conf >/dev/null 2>&1 && sudo sed -i '/'"$1"'/d' /etc/sysctl.conf
+  sudo bash -c "echo \"$1 = $2\" >> /etc/sysctl.conf"
+}
+
 initial_update
 
-# SYSTEM
-nala_install \
-  ubuntu-restricted-extras \
-  unattended-upgrades \
-  ubuntu-standard \
-  aptitude \
+PKG_SYSTEM="
+  ubuntu-restricted-extras
+  unattended-upgrades
+  ubuntu-standard
+  aptitude
   apt-transport-https
-
-# GENERAL
-nala_install \
-  preload \
-  gnome-tweaks \
-  file-roller \
+"
+PKG_GENERAL="
+  preload
+  gnome-tweaks
+  file-roller
   cheese
-
-# CLI
-nala_install \
-  hwinfo \
-  neovim \
-  openssh-server \
-  wget \
-  gpg \
-  tree \
-  duf \
-  btop \
-  neofetch \
-  htop \
-  iotop \
-  nmon \
+"
+PKG_CLI="
+  hwinfo
+  neovim
+  openssh-server
+  wget
+  gpg
+  tree
+  duf
+  btop
+  neofetch
+  htop
+  iotop
+  nmon
   net-tools
-
-# OFFICE
-nala_install \
-  libreoffice \
-  libreoffice-l10n-de \
-  libreoffice-help-de \
+"
+PKG_OFFICE="
+  libreoffice
+  libreoffice-l10n-de
+  libreoffice-help-de
   libreoffice-style-sifr
-
-# GRAPHICS
-nala_install \
-  gimp \
-  gimp-help-de \
+"
+PKG_GRAPHICS="
+  gimp
+  gimp-help-de
   inkscape
-
-# MULTIMEDIA
-nala_install \
-  vlc \
-  vlc-l10n \
+"
+PKG_MULTIMEDIA="
+  vlc
+  vlc-l10n
   vlc-plugin-visualization
-
-# CODECS
-nala_install \
-  faac \
-  libfdk-aac2 \
-  fdkaac \
-  aften \
-  lame \
-  speex \
-  libavif-bin \
-  dav1d \
-  rav1e \
-  svt-av1 \
-  davs2 \
-  x264 \
-  x265 \
-  mkvtoolnix \
-  ogmtools \
+"
+PKG_CODECS="
+  faac
+  libfdk-aac2
+  fdkaac
+  aften
+  lame
+  speex
+  libavif-bin
+  dav1d
+  rav1e
+  svt-av1
+  davs2
+  x264
+  x265
+  mkvtoolnix
+  ogmtools
   ffmpeg
-
-# COMPRESSION
-nala_install \
-  bzip2 \
-  lbzip2 \
-  pbzip2 \
-  bzip3 \
-  gzip \
-  pigz \
-  lrzip \
-  lz4 \
-  lzip \
-  plzip \
-  lzop \
-  pixz \
-  zstd \
-  7zip \
-  dar \
-  tar \
-  rar \
-  unrar \
-  tarlz \
-  zip \
-  unzip \
-  unar \
-  zpaq \
-  lhasa \
-  unace \
+"
+PKG_COMPRESSION="
+  bzip2
+  lbzip2
+  pbzip2
+  bzip3
+  gzip
+  pigz
+  lrzip
+  lz4
+  lzip
+  plzip
+  lzop
+  pixz
+  zstd
+  7zip
+  dar
+  tar
+  rar
+  unrar
+  tarlz
+  zip
+  unzip
+  unar
+  zpaq
+  lhasa
+  unace
   cabextract
-
-# DEVELOPMENT
-nala_install \
-  build-essential \
-  make \
-  cmake \
-  clang \
-  clang-tidy \
-  clang-format \
-  clang-tools \
-  curl \
-  ca-certificates \
-  libssl-dev \
-  libmagic-dev \
-  libmagickwand-dev \
-  git \
-  default-jdk \
-  shellcheck \
-  shfmt \
+"
+PKG_DEVELOPMENT="
+  build-essential
+  make
+  cmake
+  clang
+  clang-tidy
+  clang-format
+  clang-tools
+  curl
+  ca-certificates
+  libssl-dev
+  libmagic-dev
+  libmagickwand-dev
+  git
+  default-jdk
+  shellcheck
+  shfmt
   zeal
+"
+
+nala_install \
+  $PKG_SYSTEM \
+  $PKG_GENERAL \
+  $PKG_CLI \
+  $PKG_OFFICE \
+  $PKG_GRAPHICS \
+  $PKG_MULTIMEDIA \
+  $PKG_CODECS \
+  $PKG_COMPRESSION \
+  $PKG_DEVELOPMENT
 
 # VS CODE
 (
@@ -187,11 +196,6 @@ cat /etc/environment
 echo
 
 # SYSTCTL
-function sysctl_add()
-{
-  grep "$1" /etc/sysctl.conf >/dev/null 2>&1 && sudo sed -i '/'"$1"'/d' /etc/sysctl.conf
-  sudo bash -c "echo \"$1 = $2\" >> /etc/sysctl.conf"
-}
 sudo sed -i '/^[a-z]/d' /etc/sysctl.conf
 sysctl_add "kernel.printk" "3 4 1 3"
 sysctl_add "kernel.sysrq" 0
