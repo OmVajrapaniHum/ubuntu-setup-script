@@ -154,15 +154,21 @@ nala_install \
   zeal
 
 # VS CODE
-cd /tmp && pwd || echo
-wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg
-sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg
-sudo rm -v /etc/apt/sources.list.d/vscode.*
-echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" | sudo tee /etc/apt/sources.list.d/vscode.list > /dev/null
-rm -fv packages.microsoft.gpg
-sudo nala update
-sudo nala install -y code
-cd $CWD && pwd || echo
+(
+  dpkg --get-selections "code" | grep --word-regexp "install"
+) && (
+  echo "VS Code installed"
+) || (
+  cd /tmp && pwd || echo
+  wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg
+  sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg
+  sudo rm -v /etc/apt/sources.list.d/vscode.*
+  echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" | sudo tee /etc/apt/sources.list.d/vscode.list > /dev/null
+  rm -fv packages.microsoft.gpg
+  sudo nala update
+  sudo nala install -y code
+  cd $CWD && pwd || echo
+)
 
 # REMOVE
 nala_remove \
