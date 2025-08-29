@@ -39,6 +39,8 @@ function sysctl_add
   sudo bash -c "echo \"$1 = $2\" >> /etc/sysctl.conf"
 }
 
+echo "
+update packages:"
 initial_update
 
 PKG_SYSTEM="
@@ -151,6 +153,8 @@ PKG_DEVELOPMENT="
   zeal
 "
 
+echo "
+install packages:"
 nala_install \
   $PKG_SYSTEM \
   $PKG_GENERAL \
@@ -163,6 +167,8 @@ nala_install \
   $PKG_DEVELOPMENT
 
 # VS CODE
+echo "
+install VS Code:"
 (
   dpkg --get-selections "code" | grep --word-regexp "install"
 ) && (
@@ -180,12 +186,21 @@ nala_install \
 )
 
 # REMOVE
+echo "
+remove packages:"
 nala_remove \
   thunderbird \
   vim
 
 # CLEAN
+echo "
+autopurge packages:"
 sudo nala autopurge -y
+
+# SNAP
+echo "
+manage snap:"
+sudo snap refresh
 
 # ENVIRONMENT
 echo "
