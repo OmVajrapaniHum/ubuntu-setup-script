@@ -2,9 +2,36 @@
 #
 # Jakob Janzen
 # jakob.janzen80@gmail.com
-# 2025-08-29
+# 2025-09-28
 #
 export CWD="$PWD"
+
+usage()
+{
+  echo "usage: $(basename $0) [muh]
+  -m  Linux-Mint Ubuntu setup.
+  -u  Ubuntu setup.
+  -h  Show this help and quit.
+  "
+  exit 1
+}
+
+SETUP=
+while getopts ":muh" opt
+do
+  case $opt in
+  m)
+    SETUP=linuxmintubuntu
+    ;;
+  u)
+    SETUP=ubuntu
+    ;;
+  h|\?)
+    usage
+    ;;
+  esac
+done
+[[ -n "$SETUP" ]] || usage
 
 function initial_update
 {
@@ -43,6 +70,13 @@ echo "
 update packages:"
 initial_update
 
+PKG_LINUXMINTUBUNTU="
+"
+
+PKG_UBUNTU="
+  gnome-tweaks
+"
+
 PKG_SYSTEM="
   ubuntu-restricted-extras
   unattended-upgrades
@@ -52,7 +86,6 @@ PKG_SYSTEM="
 "
 PKG_GENERAL="
   preload
-  gnome-tweaks
   file-roller
   cheese
 "
@@ -155,6 +188,22 @@ PKG_DEVELOPMENT="
 
 echo "
 install packages:"
+case $SETUP in
+linuxmintubuntu)
+  if [[ -n "$PKG_LINUXMINTUBUNTU" ]]
+  then
+    echo "Linux-Mint Ubuntu"
+    nala_install $PKG_LINUXMINTUBUNTU
+  fi
+  ;;
+ubuntu)
+  if [[ -n "$PKG_UBUNTU" ]]
+  then
+    echo "Ubuntu"
+    nala_install $PKG_UBUNTU
+  fi
+  ;;
+esac
 nala_install \
   $PKG_SYSTEM \
   $PKG_GENERAL \
@@ -169,11 +218,10 @@ nala_install \
 # VS CODE
 echo "
 install VS Code:"
-(
-  dpkg --get-selections "code" | grep --word-regexp "install"
-) && (
+if dpkg --get-selections "code" | grep --word-regexp "install"
+then
   echo "VS Code installed"
-) || (
+else
   cd /tmp && pwd || echo
   wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg
   sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg
@@ -183,7 +231,7 @@ install VS Code:"
   sudo nala update
   sudo nala install -y code
   cd $CWD && pwd || echo
-)
+fi
 
 # REMOVE
 echo "
@@ -198,15 +246,33 @@ autopurge packages:"
 sudo nala autopurge -y
 
 # SNAP
-echo "
-manage snap:"
-sudo snap refresh
+case $SETUP in
+linuxmintubuntu)
+  if [[ -n "$PKG_LINUXMINTUBUNTU" ]]
+  then
+    echo "
+    manage flatpak:"
+    echo "Linux-Mint Ubuntu"
+    flatpak list
+    flatpak update
+  fi
+  ;;
+ubuntu)
+  if [[ -n "$PKG_UBUNTU" ]]
+  then
+    echo "
+    manage snap:"
+    echo "Ubuntu"
+    sudo snap refresh
+  fi
+  ;;
+esac
 
 # ENVIRONMENT
 echo "
 updating /etc/environment:"
 grep "JAVA_HOME=" /etc/environment >/dev/null 2>&1 && sudo sed -i '/JAVA_HOME=/d' /etc/environment
-sudo bash -c "echo \"JAVA_HOME=$(update-alternatives --list java)\" >> /etc/environment"
+sudo bash -c "echo \"JAVA_HOME=\$(update-alternatives --list java)\" >> /etc/environment"
 cat /etc/environment
 echo
 
@@ -220,12 +286,12 @@ sysctl_add "vm.swappiness" 10
 sysctl_add "net.ipv4.conf.all.accept_redirects" 0
 sysctl_add "net.ipv4.conf.all.accept_source_route" 0
 sysctl_add "net.ipv4.conf.all.log_martians" 1
-sysctl_add "net.ipv4.conf.all.rp_filter" 1
+#sysctl_add "net.ipv4.conf.all.rp_filter" 1
 sysctl_add "net.ipv4.conf.all.secure_redirects" 0
 sysctl_add "net.ipv4.conf.all.send_redirects" 0
 sysctl_add "net.ipv4.conf.default.accept_redirects" 0
 sysctl_add "net.ipv4.conf.default.accept_source_route" 0
-sysctl_add "net.ipv4.conf.default.rp_filter" 1
+#sysctl_add "net.ipv4.conf.default.rp_filter" 1
 sysctl_add "net.ipv4.conf.default.secure_redirects" 0
 sysctl_add "net.ipv4.conf.default.send_redirects" 0
 sysctl_add "net.ipv4.icmp_echo_ignore_all" 1
@@ -242,6 +308,7 @@ sysctl_add "net.ipv6.conf.default.autoconf" 0
 sysctl_add "net.ipv6.conf.default.dad_transmits" 0
 sysctl_add "net.ipv6.conf.default.max_addresses" 1
 sysctl_add "net.ipv6.conf.default.router_solicitations" 0
+sudo sysctl --system
 
 # SERVICES
 sudo systemctl enable --now ssh
