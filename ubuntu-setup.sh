@@ -101,6 +101,7 @@ PKG_GENERAL="
   file-roller
   cheese
   meld
+  transmission
 "
 PKG_CLI="
   hwinfo
@@ -132,6 +133,7 @@ PKG_MULTIMEDIA="
   vlc
   vlc-l10n
   vlc-plugin-visualization
+  mpv
 "
 PKG_CODECS="
   faac
@@ -196,7 +198,14 @@ PKG_DEVELOPMENT="
   default-jdk
   shellcheck
   shfmt
+  valgrind
   zeal
+"
+
+PKG_REMOVE="
+  thunderbird
+  vim
+  vim-tiny
 "
 
 echo "
@@ -251,8 +260,7 @@ fi
 echo "
 remove packages:"
 nala_remove \
-  thunderbird \
-  vim
+  $PKG_REMOVE
 
 # CLEAN
 echo "
