@@ -2,36 +2,50 @@
 #
 # Jakob Janzen
 # jakob.janzen80@gmail.com
-# 2025-09-28
+# 2025-10-26
 #
 export CWD="$PWD"
 
 usage()
 {
-  echo "usage: $(basename $0) [muh]
-  -m  Linux-Mint Ubuntu setup.
-  -u  Ubuntu setup.
-  -h  Show this help and quit.
+  echo "Usage: $(basename "$0") [OPTIONS]
+  -m, --linux-mint-ubuntu   Linux-Mint Ubuntu setup.
+  -u, --ubuntu              Ubuntu setup.
+  -h, --help                Show this help and quit.
   "
   exit 1
 }
 
+TEMP=$(getopt -o 'muh' --long 'linux-mint-ubuntu,ubuntu,help' -- "$@")
+if [[ $? -ne 0 ]]; then
+  usage
+fi
+eval set -- "$TEMP"
+unset TEMP
 SETUP=
-while getopts ":muh" opt
-do
-  case $opt in
-  m)
+while true; do
+  case "$1" in
+  '-m' | '--linux-mint-ubuntu')
+    echo ""
     SETUP=linuxmintubuntu
+    shift
+    continue
     ;;
-  u)
+  '-u' | '--ubuntu')
     SETUP=ubuntu
+    shift
+    continue
     ;;
-  h|\?)
+  '-h' | '--help')
     usage
+    ;;
+  '--')
+    shift
+    break
     ;;
   esac
 done
-[[ -n "$SETUP" ]] || usage
+[[ -n $SETUP ]] || usage
 
 function initial_update
 {
@@ -42,8 +56,7 @@ function initial_update
 
 function nala_install
 {
-  for item in $@
-  do
+  for item in $@; do
     (
       dpkg --get-selections "$item" | grep --word-regexp "install"
     ) || sudo nala install -y "$item"
@@ -52,8 +65,7 @@ function nala_install
 
 function nala_remove
 {
-  for item in $@
-  do
+  for item in $@; do
     (
       dpkg --get-selections "$item" | grep --word-regexp "install"
     ) && sudo nala purge -y "$item" || echo "$item not installed"
@@ -88,6 +100,7 @@ PKG_GENERAL="
   preload
   file-roller
   cheese
+  meld
 "
 PKG_CLI="
   hwinfo
@@ -188,17 +201,15 @@ PKG_DEVELOPMENT="
 
 echo "
 install packages:"
-case $SETUP in
+case "$SETUP" in
 linuxmintubuntu)
-  if [[ -n "$PKG_LINUXMINTUBUNTU" ]]
-  then
+  if [[ -n $PKG_LINUXMINTUBUNTU ]]; then
     echo "Linux-Mint Ubuntu"
     nala_install $PKG_LINUXMINTUBUNTU
   fi
   ;;
 ubuntu)
-  if [[ -n "$PKG_UBUNTU" ]]
-  then
+  if [[ -n $PKG_UBUNTU ]]; then
     echo "Ubuntu"
     nala_install $PKG_UBUNTU
   fi
@@ -218,19 +229,18 @@ nala_install \
 # VS CODE
 echo "
 install VS Code:"
-if dpkg --get-selections "code" | grep --word-regexp "install"
-then
+if dpkg --get-selections "code" | grep --word-regexp "install"; then
   echo "VS Code installed"
 else
   cd /tmp && pwd || echo
-  wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg
+  wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor >packages.microsoft.gpg
   sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg
   sudo rm -v /etc/apt/sources.list.d/vscode.*
-  echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" | sudo tee /etc/apt/sources.list.d/vscode.list > /dev/null
+  echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" | sudo tee /etc/apt/sources.list.d/vscode.list >/dev/null
   rm -fv packages.microsoft.gpg
   sudo nala update
   sudo nala install -y code
-  cd $CWD && pwd || echo
+  cd "$CWD" && pwd || echo
 fi
 
 # REMOVE
@@ -248,8 +258,7 @@ sudo nala autopurge -y
 # SNAP
 case $SETUP in
 linuxmintubuntu)
-  if [[ -n "$PKG_LINUXMINTUBUNTU" ]]
-  then
+  if [[ -n $PKG_LINUXMINTUBUNTU ]]; then
     echo "
     manage flatpak:"
     echo "Linux-Mint Ubuntu"
@@ -258,8 +267,7 @@ linuxmintubuntu)
   fi
   ;;
 ubuntu)
-  if [[ -n "$PKG_UBUNTU" ]]
-  then
+  if [[ -n $PKG_UBUNTU ]]; then
     echo "
     manage snap:"
     echo "Ubuntu"
@@ -272,7 +280,7 @@ esac
 echo "
 updating /etc/environment:"
 grep "JAVA_HOME=" /etc/environment >/dev/null 2>&1 && sudo sed -i '/JAVA_HOME=/d' /etc/environment
-sudo bash -c "echo \"JAVA_HOME=\$(update-alternatives --list java)\" >> /etc/environment"
+sudo bash -c 'echo "JAVA_HOME=$(update-alternatives --list java)" >> /etc/environment'
 cat /etc/environment
 echo
 
@@ -286,12 +294,12 @@ sysctl_add "vm.swappiness" 10
 sysctl_add "net.ipv4.conf.all.accept_redirects" 0
 sysctl_add "net.ipv4.conf.all.accept_source_route" 0
 sysctl_add "net.ipv4.conf.all.log_martians" 1
-#sysctl_add "net.ipv4.conf.all.rp_filter" 1
+sysctl_add "net.ipv4.conf.all.rp_filter" 1
 sysctl_add "net.ipv4.conf.all.secure_redirects" 0
 sysctl_add "net.ipv4.conf.all.send_redirects" 0
 sysctl_add "net.ipv4.conf.default.accept_redirects" 0
 sysctl_add "net.ipv4.conf.default.accept_source_route" 0
-#sysctl_add "net.ipv4.conf.default.rp_filter" 1
+sysctl_add "net.ipv4.conf.default.rp_filter" 1
 sysctl_add "net.ipv4.conf.default.secure_redirects" 0
 sysctl_add "net.ipv4.conf.default.send_redirects" 0
 sysctl_add "net.ipv4.icmp_echo_ignore_all" 1
@@ -315,4 +323,3 @@ sudo systemctl enable --now ssh
 sudo systemctl --no-pager status ssh
 sudo systemctl restart systemd-sysctl
 sudo systemctl --no-pager status systemd-sysctl
-
