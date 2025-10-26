@@ -205,6 +205,7 @@ PKG_DEVELOPMENT="
 PKG_REMOVE="
   thunderbird
   vim
+  vim-common
   vim-tiny
 "
 
@@ -261,6 +262,7 @@ echo "
 remove packages:"
 nala_remove \
   $PKG_REMOVE
+sudo update-alternatives --remove vim /usr/bin/vim
 
 # CLEAN
 echo "
