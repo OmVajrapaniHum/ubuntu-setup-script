@@ -183,6 +183,13 @@ PKG_COMPRESSION="
 "
 PKG_DEVELOPMENT="
   build-essential
+  python-is-python3
+  python3-pip
+  python3-autopep8
+  python3-poetry
+  python3-pytest
+  pipenv
+  black
   make
   cmake
   clang
