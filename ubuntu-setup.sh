@@ -17,6 +17,7 @@ usage()
 }
 
 TEMP=$(getopt -o 'muh' --long 'linux-mint-ubuntu,ubuntu,help' -- "$@")
+# shellcheck disable=SC2181
 if [[ $? -ne 0 ]]; then
   usage
 fi
@@ -56,6 +57,7 @@ function initial_update
 
 function nala_install
 {
+  # shellcheck disable=SC2068
   for item in $@; do
     (
       dpkg --get-selections "$item" | grep --word-regexp "install"
@@ -65,6 +67,7 @@ function nala_install
 
 function nala_remove
 {
+  # shellcheck disable=SC2068
   for item in $@; do
     (
       dpkg --get-selections "$item" | grep --word-regexp "install"
@@ -188,6 +191,7 @@ PKG_DEVELOPMENT="
   python3-autopep8
   python3-poetry
   python3-pytest
+  python3-flake8
   pipenv
   black
   make
@@ -232,6 +236,7 @@ ubuntu)
   fi
   ;;
 esac
+# shellcheck disable=SC2086
 nala_install \
   $PKG_SYSTEM \
   $PKG_GENERAL \
@@ -267,6 +272,7 @@ fi
 # REMOVE
 echo "
 remove packages:"
+# shellcheck disable=SC2086
 nala_remove \
   $PKG_REMOVE
 sudo update-alternatives --remove vim /usr/bin/vim
