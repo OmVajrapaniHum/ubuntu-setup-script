@@ -105,6 +105,11 @@ PKG_GENERAL="
   cheese
   meld
   transmission
+  hunspell
+  hunspell-de-de
+  hunspell-en-us
+  hunspell-dictionary-de
+  hunspell-dictionary-en-us
 "
 PKG_CLI="
   hwinfo
@@ -255,13 +260,13 @@ if dpkg --get-selections "code" | grep --word-regexp "install"; then
   echo "VS Code installed"
 else
   cd /tmp && pwd || echo
-  wget -qO- https://packages.microsoft.com/keys/microsoft.asc | \
+  wget -qO- https://packages.microsoft.com/keys/microsoft.asc |
     gpg --dearmor >packages.microsoft.gpg
   sudo install -D -o root -g root -m 644 packages.microsoft.gpg \
     /etc/apt/keyrings/packages.microsoft.gpg
   sudo rm -v /etc/apt/sources.list.d/vscode.*
-  echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] "\
-    "https://packages.microsoft.com/repos/code stable main" | \
+  echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] " \
+    "https://packages.microsoft.com/repos/code stable main" |
     sudo tee /etc/apt/sources.list.d/vscode.list >/dev/null
   rm -fv packages.microsoft.gpg
   sudo nala update
@@ -313,29 +318,36 @@ echo
 
 # SYSTCTL
 sudo sed -i '/^[a-z]/d' /etc/sysctl.conf
+
 sysctl_add "kernel.printk" "3 4 1 3"
 sysctl_add "kernel.sysrq" 0
+
 sysctl_add "vm.dirty_background_ratio" 2
 sysctl_add "vm.dirty_ratio" 60
 sysctl_add "vm.swappiness" 10
+
 sysctl_add "net.ipv4.conf.all.accept_redirects" 0
 sysctl_add "net.ipv4.conf.all.accept_source_route" 0
 sysctl_add "net.ipv4.conf.all.log_martians" 1
 sysctl_add "net.ipv4.conf.all.rp_filter" 1
 sysctl_add "net.ipv4.conf.all.secure_redirects" 0
 sysctl_add "net.ipv4.conf.all.send_redirects" 0
+
 sysctl_add "net.ipv4.conf.default.accept_redirects" 0
 sysctl_add "net.ipv4.conf.default.accept_source_route" 0
 sysctl_add "net.ipv4.conf.default.rp_filter" 1
 sysctl_add "net.ipv4.conf.default.secure_redirects" 0
 sysctl_add "net.ipv4.conf.default.send_redirects" 0
+
 sysctl_add "net.ipv4.icmp_echo_ignore_all" 1
 sysctl_add "net.ipv4.icmp_echo_ignore_broadcasts" 1
 sysctl_add "net.ipv4.ip_forward" 0
+
 sysctl_add "net.ipv4.tcp_max_syn_backlog" 5120
 sysctl_add "net.ipv4.tcp_syn_retries" 3
 sysctl_add "net.ipv4.tcp_synack_retries" 5
 sysctl_add "net.ipv4.tcp_syncookies" 1
+
 sysctl_add "net.ipv6.conf.default.accept_ra_defrtr" 0
 sysctl_add "net.ipv6.conf.default.accept_ra_pinfo" 0
 sysctl_add "net.ipv6.conf.default.accept_ra_rtr_pref" 0
@@ -343,10 +355,15 @@ sysctl_add "net.ipv6.conf.default.autoconf" 0
 sysctl_add "net.ipv6.conf.default.dad_transmits" 0
 sysctl_add "net.ipv6.conf.default.max_addresses" 1
 sysctl_add "net.ipv6.conf.default.router_solicitations" 0
+
 sudo sysctl --system
 
 # SERVICES
 sudo systemctl enable --now ssh
 sudo systemctl --no-pager status ssh
+
+sudo systemctl enable --now preload
+sudo systemctl --no-pager status preload
+
 sudo systemctl restart systemd-sysctl
 sudo systemctl --no-pager status systemd-sysctl
