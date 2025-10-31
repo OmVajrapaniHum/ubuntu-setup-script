@@ -1,5 +1,12 @@
 #!/bin/env python
-"""Read Firefox profiles.ini and output as dictionary and write to file."""
+"""
+Jakob Janzen
+jakob.janzen80@gmail.com
+2025-10-31
+
+Firefox performance and privacy tweaks setup script.
+
+"""
 import os
 import os.path
 import sys

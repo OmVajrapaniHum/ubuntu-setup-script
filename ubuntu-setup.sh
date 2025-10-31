@@ -2,7 +2,9 @@
 #
 # Jakob Janzen
 # jakob.janzen80@gmail.com
-# 2025-10-26
+# 2025-10-31
+#
+# Ubuntu setup script.
 #
 export CWD="$PWD"
 
