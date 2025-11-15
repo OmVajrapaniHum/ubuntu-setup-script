@@ -20,13 +20,15 @@ usage()
 
 TEMP=$(getopt -o 'muh' --long 'linux-mint-ubuntu,ubuntu,help' -- "$@")
 # shellcheck disable=SC2181
-if [[ $? -ne 0 ]]; then
+if [[ $? -ne 0 ]]
+then
   usage
 fi
 eval set -- "$TEMP"
 unset TEMP
 SETUP=
-while true; do
+while true
+do
   case "$1" in
   '-m' | '--linux-mint-ubuntu')
     echo ""
@@ -60,7 +62,8 @@ function initial_update
 function nala_install
 {
   # shellcheck disable=SC2068
-  for item in $@; do
+  for item in $@
+  do
     (
       dpkg --get-selections "$item" | grep --word-regexp "install"
     ) || sudo nala install -y "$item"
@@ -70,7 +73,8 @@ function nala_install
 function nala_remove
 {
   # shellcheck disable=SC2068
-  for item in $@; do
+  for item in $@
+  do
     (
       dpkg --get-selections "$item" | grep --word-regexp "install"
     ) && sudo nala purge -y "$item" || echo "$item not installed"
@@ -232,13 +236,15 @@ echo "
 install packages:"
 case "$SETUP" in
 linuxmintubuntu)
-  if [[ -n $PKG_LINUXMINTUBUNTU ]]; then
+  if [[ -n $PKG_LINUXMINTUBUNTU ]]
+  then
     echo "Linux-Mint Ubuntu"
     nala_install $PKG_LINUXMINTUBUNTU
   fi
   ;;
 ubuntu)
-  if [[ -n $PKG_UBUNTU ]]; then
+  if [[ -n $PKG_UBUNTU ]]
+  then
     echo "Ubuntu"
     nala_install $PKG_UBUNTU
   fi
@@ -259,7 +265,8 @@ nala_install \
 # VS CODE
 echo "
 install VS Code:"
-if dpkg --get-selections "code" | grep --word-regexp "install"; then
+if dpkg --get-selections "code" | grep --word-regexp "install"
+then
   echo "VS Code installed"
 else
   cd /tmp && pwd || echo
@@ -293,7 +300,8 @@ sudo nala autopurge -y
 # SNAP
 case $SETUP in
 linuxmintubuntu)
-  if [[ -n $PKG_LINUXMINTUBUNTU ]]; then
+  if [[ -n $PKG_LINUXMINTUBUNTU ]]
+  then
     echo "
     manage flatpak:"
     echo "Linux-Mint Ubuntu"
@@ -302,7 +310,8 @@ linuxmintubuntu)
   fi
   ;;
 ubuntu)
-  if [[ -n $PKG_UBUNTU ]]; then
+  if [[ -n $PKG_UBUNTU ]]
+  then
     echo "
     manage snap:"
     echo "Ubuntu"
