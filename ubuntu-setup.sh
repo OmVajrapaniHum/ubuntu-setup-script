@@ -110,8 +110,9 @@ PKG_GENERAL="
   hunspell
   hunspell-de-de
   hunspell-en-us
-  hunspell-dictionary-de
-  hunspell-dictionary-en-us
+  aspell
+  aspell-de
+  aspell-en
 "
 PKG_CLI="
   hwinfo
