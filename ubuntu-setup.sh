@@ -205,6 +205,7 @@ PKG_DEVELOPMENT="
   python3-poetry
   python3-pytest
   python3-flake8
+  python3-venv
   pipenv
   black
   make
