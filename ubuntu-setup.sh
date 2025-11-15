@@ -117,6 +117,7 @@ PKG_GENERAL="
   aspell
   aspell-de
   aspell-en
+  gcolor3
 "
 PKG_CLI="
   hwinfo
