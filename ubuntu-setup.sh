@@ -241,6 +241,7 @@ linuxmintubuntu)
   if [[ -n $PKG_LINUXMINTUBUNTU ]]
   then
     echo "Linux-Mint Ubuntu"
+    # shellcheck disable=SC2086
     nala_install $PKG_LINUXMINTUBUNTU
   fi
   ;;
@@ -248,6 +249,7 @@ ubuntu)
   if [[ -n $PKG_UBUNTU ]]
   then
     echo "Ubuntu"
+    # shellcheck disable=SC2086
     nala_install $PKG_UBUNTU
   fi
   ;;

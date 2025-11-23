@@ -90,7 +90,6 @@ def firefox_cfg_setup(config):
         lock_pref(f, "webgl.max-size", 16384)
         lock_pref(f, "dom.webgpu.enabled", true)
 
-
         comment(f, "Increase predictive network operations")
         lock_pref(f, "network.dns.disablePrefetchFromHTTPS", false)
         lock_pref(f, "network.dnsCacheEntries", 20000)
