@@ -20,15 +20,13 @@ usage()
 
 TEMP=$(getopt -o 'muh' --long 'linux-mint-ubuntu,ubuntu,help' -- "$@")
 # shellcheck disable=SC2181
-if [[ $? -ne 0 ]]
-then
+if [[ $? -ne 0 ]]; then
   usage
 fi
 eval set -- "$TEMP"
 unset TEMP
 SETUP=
-while true
-do
+while true; do
   case "$1" in
   '-m' | '--linux-mint-ubuntu')
     echo ""
@@ -62,8 +60,7 @@ function initial_update
 function nala_install
 {
   # shellcheck disable=SC2068
-  for item in $@
-  do
+  for item in $@; do
     (
       dpkg --get-selections "$item" | grep --word-regexp "install"
     ) || sudo nala install -y "$item"
@@ -73,8 +70,7 @@ function nala_install
 function nala_remove
 {
   # shellcheck disable=SC2068
-  for item in $@
-  do
+  for item in $@; do
     (
       dpkg --get-selections "$item" | grep --word-regexp "install"
     ) && sudo nala purge -y "$item" || echo "$item not installed"
@@ -118,7 +114,14 @@ PKG_GENERAL="
   aspell-de
   aspell-en
   gcolor3
+  pandoc
+  texlive-latex-base
+  texlive-xetex
 "
+# texlive-fonts-recommended
+# texlive-fonts-extra
+# texlive-latex-extra
+
 PKG_CLI="
   hwinfo
   neovim
@@ -238,16 +241,14 @@ echo "
 install packages:"
 case "$SETUP" in
 linuxmintubuntu)
-  if [[ -n $PKG_LINUXMINTUBUNTU ]]
-  then
+  if [[ -n $PKG_LINUXMINTUBUNTU ]]; then
     echo "Linux-Mint Ubuntu"
     # shellcheck disable=SC2086
     nala_install $PKG_LINUXMINTUBUNTU
   fi
   ;;
 ubuntu)
-  if [[ -n $PKG_UBUNTU ]]
-  then
+  if [[ -n $PKG_UBUNTU ]]; then
     echo "Ubuntu"
     # shellcheck disable=SC2086
     nala_install $PKG_UBUNTU
@@ -269,18 +270,17 @@ nala_install \
 # VS CODE
 echo "
 install VS Code:"
-if dpkg --get-selections "code" | grep --word-regexp "install"
-then
+if dpkg --get-selections "code" | grep --word-regexp "install"; then
   echo "VS Code installed"
 else
   cd /tmp && pwd || echo
-  wget -qO- https://packages.microsoft.com/keys/microsoft.asc | \
+  wget -qO- https://packages.microsoft.com/keys/microsoft.asc |
     gpg --dearmor >packages.microsoft.gpg
   sudo install -D -o root -g root -m 644 packages.microsoft.gpg \
     /etc/apt/keyrings/packages.microsoft.gpg
   sudo rm -v /etc/apt/sources.list.d/vscode.*
   echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] " \
-    "https://packages.microsoft.com/repos/code stable main" | \
+    "https://packages.microsoft.com/repos/code stable main" |
     sudo tee /etc/apt/sources.list.d/vscode.list >/dev/null
   rm -fv packages.microsoft.gpg
   sudo nala update
@@ -304,8 +304,7 @@ sudo nala autopurge -y
 # SNAP
 case $SETUP in
 linuxmintubuntu)
-  if [[ -n $PKG_LINUXMINTUBUNTU ]]
-  then
+  if [[ -n $PKG_LINUXMINTUBUNTU ]]; then
     echo "
     manage flatpak:"
     echo "Linux-Mint Ubuntu"
@@ -314,8 +313,7 @@ linuxmintubuntu)
   fi
   ;;
 ubuntu)
-  if [[ -n $PKG_UBUNTU ]]
-  then
+  if [[ -n $PKG_UBUNTU ]]; then
     echo "
     manage snap:"
     echo "Ubuntu"
