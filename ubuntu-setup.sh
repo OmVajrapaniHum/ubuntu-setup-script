@@ -115,9 +115,10 @@ PKG_GENERAL="
   aspell-en
   gcolor3
   pandoc
-  texlive-latex-base
-  texlive-xetex
+  texlive-full
 "
+# texlive-latex-base
+# texlive-xetex
 # texlive-fonts-recommended
 # texlive-fonts-extra
 # texlive-latex-extra
@@ -171,6 +172,8 @@ PKG_CODECS="
   mkvtoolnix
   ogmtools
   ffmpeg
+  libwebm-tools
+  libwebm1
 "
 PKG_COMPRESSION="
   bzip2
