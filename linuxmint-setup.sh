@@ -220,7 +220,9 @@ case $SETUP in
             cheese \
             gcolor3 \
             meld \
-            transmission
+            transmission \
+            adwaita-qt \
+            adwaita-qt6
 
         nala_install "office" \
             libreoffice \
