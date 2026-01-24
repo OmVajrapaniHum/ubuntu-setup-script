@@ -15,6 +15,7 @@ function usage {
     -r, --remove    Remove only packages.
     -i, --install   Install only packages.
         --vscode    Add repository and install VS Code.
+        --tuxedo    Add repository and install drivers and utilities.
     -c, --clean     Clean only packages.
     -s, --system    Update system settings.
     -h, --help      Show this help and quit.
@@ -22,7 +23,7 @@ function usage {
     exit 1
 }
 
-TEMP=$(getopt -o 'uricsh' --long 'update,remove,install,vscode,clean,system,help' -- "$@")
+TEMP=$(getopt -o 'uricsh' --long 'update,remove,install,vscode,tuxedo,clean,system,help' -- "$@")
 if [[ $? -ne 0 ]]; then
     usage
 fi
@@ -52,6 +53,12 @@ while true; do
 
         '--vscode')
             SETUP=install_vscode
+            shift
+            continue
+            ;;
+
+        '--tuxedo')
+            SETUP=install_tuxedo
             shift
             continue
             ;;
@@ -93,24 +100,29 @@ function step {
 }
 
 function update {
-    step "apt update"
-    sudo apt update -y
+    step "ensure nala"
 
-    step "apt install nala"
-    sudo apt install -y nala
+    if dpkg -l 2>/dev/null | grep -w 'ii' | grep -wq nala; then
+        step "nala update"
+        sudo nala update
+    else
+        step "apt update"
+        sudo apt update -y
 
-    step "nala update"
-    sudo nala update
+        step "apt install nala"
+        sudo apt install -y nala
+
+        step "nala update"
+        sudo nala update
+    fi
 }
 
 function upgrade {
     update
 
-    step "apt upgrade"
-    sudo apt upgrade -y
-
     step "nala upgrade"
     sudo nala upgrade -y
+    sudo nala full-upgrade -y
 }
 
 function nala_install {
@@ -218,7 +230,6 @@ case $SETUP in
 
         nala_install "accessory" \
             cheese \
-            gcolor3 \
             meld \
             transmission \
             adwaita-qt \
@@ -360,15 +371,55 @@ case $SETUP in
         step "prepare and create VS Code repository"
         sudo rm -v /etc/apt/sources.list.d/vscode.*
         echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/packages.microsoft.gpg] " \
-        "https://packages.microsoft.com/repos/code stable main" | \
-        sudo tee /etc/apt/sources.list.d/vscode.list
+            "https://packages.microsoft.com/repos/code stable main" | \
+            sudo tee /etc/apt/sources.list.d/vscode.list
 
         step "remove temporary VS Code GPG key"
         rm -fv packages.microsoft.gpg
 
         step "install VS Code"
         update
-        sudo nala install -y code
+        nala_install "VS Code" \
+            code
+
+        step "go back to current working directory"
+        cd "$CWD" && pwd || echo
+        ;;
+
+    install_tuxedo)
+        section "SETUP TUXEDO"
+
+        step "current working directory"
+        pwd
+        CWD="$PWD"
+
+        step "go to temporary directory"
+        cd /tmp && pwd || echo
+
+        step "get GPG key for Tuxedo repository"
+        gpg_key="tuxedo-archive-keyring_2022.04.01~tux_all.deb"
+        wget "https://deb.tuxedocomputers.com/ubuntu/pool/main/t/tuxedo-archive-keyring/$gpg_key"
+
+        step "prepare and create Tuxedo repository"
+        sudo rm -v /etc/apt/sources.list.d/tuxedo-computers.*
+        echo 'deb https://deb.tuxedocomputers.com/ubuntu noble main' | \
+            sudo tee /etc/apt/sources.list.d/tuxedo-computers.list
+
+        step "install GPG key for Tuxedo in keyring"
+        sudo dpkg -i "$gpg_key"
+
+        step "remove temporary VS Code GPG key"
+        rm -fv "$gpg_key"
+
+        step "install Tuxedo drivers and utilities"
+        update
+        nala_install "Tuxedo drivers and utilities" \
+            tuxedo-control-center \
+            tuxedo-drivers \
+            tuxedo-keyboard \
+            tuxedo-touchpad-fix \
+
+
 
         step "go back to current working directory"
         cd "$CWD" && pwd || echo
