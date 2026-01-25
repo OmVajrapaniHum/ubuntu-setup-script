@@ -96,23 +96,28 @@ function section {
 
 function step {
     echo "
+:: $1 ..."
+}
+
+function substep {
+    echo "
 * $1 ..."
 }
 
 function update {
-    step "ensure nala"
+    step "update"
 
     if dpkg -l 2>/dev/null | grep -w 'ii' | grep -wq nala; then
-        step "nala update"
+        substep "nala update"
         sudo nala update
     else
-        step "apt update"
+        substep "apt update"
         sudo apt update -y
 
-        step "apt install nala"
+        substep "apt install nala"
         sudo apt install -y nala
 
-        step "nala update"
+        substep "nala update"
         sudo nala update
     fi
 }
@@ -120,14 +125,19 @@ function update {
 function upgrade {
     update
 
-    step "nala upgrade"
+    step "upgrade"
+
+    substep "nala upgrade"
     sudo nala upgrade -y
+
+    substep "nala full upgrade"
     sudo nala full-upgrade -y
 }
 
 function nala_install {
-    step "$1"
+    substep "$1"
     shift
+
     # shellcheck disable=SC2068
     if [[ -n "$(echo $@ | xargs)" ]]; then
         sudo nala install $@
@@ -135,6 +145,9 @@ function nala_install {
 }
 
 function nala_remove {
+    substep "$1"
+    shift
+
     # shellcheck disable=SC2068
     if [[ -n "$(echo $@ | xargs)" ]]; then
         sudo nala purge $@
@@ -142,7 +155,8 @@ function nala_remove {
 }
 
 function activate_service {
-    step "activate service $1"
+    substep "activate service $1"
+
     sudo systemctl enable --now $1
     sudo systemctl restart $1
     sudo systemctl --no-pager status $1
@@ -160,10 +174,13 @@ case $SETUP in
 
         update
 
-        step "remove vim"
-        nala_remove \
+        step "remove bloat"
+
+        nala_remove "vim" \
             vim-common \
-            vim-tiny \
+            vim-tiny
+
+        nala_remove "thunderbird" \
 	        thunderbird
         ;;
 
@@ -312,6 +329,7 @@ case $SETUP in
             cmake \
             cmake-format \
             git \
+            googletest \
             clang \
             clang-format \
             clang-tidy \
