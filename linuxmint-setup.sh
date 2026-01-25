@@ -163,7 +163,8 @@ case $SETUP in
         step "remove vim"
         nala_remove \
             vim-common \
-            vim-tiny
+            vim-tiny \
+	        thunderbird
         ;;
 
     install_packages)
