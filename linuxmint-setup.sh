@@ -194,6 +194,8 @@ case $SETUP in
             neovim \
             tmux \
             preload \
+            smartmontools \
+            haveged
 
         nala_install "utility" \
             bat \
@@ -426,7 +428,7 @@ vm.swappiness = 10
         section "JOURNALD"
 
         set_journald_property Storage persistent
-        set_journald_property SystemMaxUse 200M
+        set_journald_property SystemMaxUse 100M
         set_journald_property SystemMaxFileSize 50M
         set_journald_property SyncIntervalSec 5m
 
@@ -435,6 +437,7 @@ vm.swappiness = 10
         activate_service systemd-sysctl
         activate_service systemd-journald
         activate_service preload
+        activate_service haveged
         activate_service ssh
         ;;
 
