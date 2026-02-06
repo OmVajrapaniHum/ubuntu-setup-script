@@ -129,11 +129,33 @@ function nala_remove {
     fi
 }
 
+function set_journald_property {
+    local key="$1"
+    local value="$2"
+    local config_file="/etc/systemd/journald.conf"
+    local backup_file="$config_file.bak"
+
+    if [[ ! "$value" =~ ^[0-9]+[KMGTPsmhday]?$ ]] && [[ ! "$value" =~ ^(persistent|auto|volatile|yes|no)$ ]]; then
+        step "error: invalid value '$value' for key '$key'!" >&2
+        return 1
+    fi
+
+    if [[ ! -f "$backup_file" ]]; then
+        sudo cp "$config_file" "$backup_file"
+        step "backup created: $backup_file"
+    fi
+
+    sudo sed -i "/^#\?${key}=/d" "$config_file"
+    sudo sed -i "/^\[Journal\]/a ${key}=${value}" "$config_file"
+
+    step "status: $key successfully set to $value"
+}
+
 function activate_service {
     step "activate service $1"
-    sudo systemctl enable --now $1
-    sudo systemctl restart $1
-    sudo systemctl --no-pager status $1
+    sudo systemctl enable --now "$1"
+    sudo systemctl restart "$1"
+    sudo systemctl --no-pager status "$1"
 }
 
 case $SETUP in
@@ -401,9 +423,17 @@ vm.swappiness = 10
         rm -v "$src"
         sudo sysctl --system
 
+        section "JOURNALD"
+
+        set_journald_property Storage persistent
+        set_journald_property SystemMaxUse 200M
+        set_journald_property SystemMaxFileSize 50M
+        set_journald_property SyncIntervalSec 5m
+
         section "SERVICES"
 
         activate_service systemd-sysctl
+        activate_service systemd-journald
         activate_service preload
         activate_service ssh
         ;;
