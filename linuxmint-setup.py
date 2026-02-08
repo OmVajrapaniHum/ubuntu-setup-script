@@ -298,283 +298,279 @@ def main():
     if args.update:
         logger.section("UPDATE")
         setup.upgrade()
+
         logger.success("System is up to date")
 
     if args.remove:
-        logger.section("REMOVE")
+        logger.section("PURGE & CLEANUP")
         setup.update()
+
         categories = {
             "VIM": [
                 "vim-common",
                 "vim-tiny",
             ],
-            "OTHER": [
+            "UNWANTED": [
                 "gcolor3",
             ],
         }
         setup.remove(categories)
-        logger.success("Removed packages from system")
+
+        logger.success("Cleaned up unwanted packages from the system")
 
     if args.install:
         logger.section("INSTALL")
         setup.update()
+
         categories = {
             "APT": [
-                # 1. System Core & Base Utilities
-                "ubuntu-standard",  # Essential base system utilities
-                "apt-transport-https",  # Legacy support for secure repositories
-                # 2. Package Management & GUI
-                "aptitude",  # Powerful CLI terminal interface for APT
-                "synaptic",  # Reliable GUI package manager (GTK-based)
-                # 3. Automation & Maintenance
-                "unattended-upgrades",  # Automatic installation of security updates
-                # 4. User Experience & Codecs
-                "ubuntu-restricted-extras",  # Media codecs, fonts, and restricted software
+                # 1. Base
+                "ubuntu-standard",  # Core system utilities
+                "apt-transport-https",  # HTTPS repo support
+                # 2. Management
+                "aptitude",  # Advanced terminal interface
+                "synaptic",  # Graphical package manager
+                # 3. Automation
+                "unattended-upgrades",  # Security auto-patching
+                # 4. Experience
+                "ubuntu-restricted-extras",  # Media codecs and MS fonts
             ],
             "PACKAGE_TOOLS": [
-                # 1. Repository & Connectivity Infrastructure
-                "apt-transport-https",  # Legacy support for HTTPS repositories
-                "bash-completion",  # Tab-completion for package names in terminal
-                "ca-certificates",  # Required for secure GPG/Repo downloads
-                "software-properties-common",  # Provides 'add-apt-repository' for VS Code/TUXEDO
-                # 2. Advanced Management Frontends
-                "nala",  # Your primary, faster terminal frontend
-                "synaptic",  # The "gold standard" GUI for complex fixes
-                "apt-file",  # Search for which package contains a missing file
-                # 3. Python Integration (For your script)
-                "python3-apt",  # Allows Python to check package status directly
-                # 4. Post-Install & Maintenance
-                "needrestart",  # Alerts you which services need a restart after updates
-                "ppa-purge",  # Safely rolls back PPA conflicts
-                "deborphan",  # Finds leftover libraries from your Cinnamon purge
+                # 1. Infrastructure
+                "apt-transport-https",  # Protocol support
+                "bash-completion",  # Terminal tab-completion
+                "ca-certificates",  # SSL/TLS validation
+                "software-properties-common",  # Repository management
+                # 2. Frontends
+                "nala",  # Modern terminal frontend
+                "synaptic",  # GUI management tool
+                "apt-file",  # Package file search
+                # 3. Python
+                "python3-apt",  # Python APT bindings
+                # 4. Maintenance
+                "needrestart",  # Service restart prompter
+                "ppa-purge",  # PPA rollback utility
+                "deborphan",  # Orphaned library finder
             ],
             "REQUIRED": [
-                # 1. Hardware & Thermal Management
-                "thermald",  # Intel Thermal Daemon (Essential for TUXEDO laptops)
-                "smartmontools",  # SSD Health and Monitoring
-                # 2. Background System Optimization
-                "haveged",  # Entropy generator (Prevents system lag)
-                "preload",  # Adaptive readahead (Speeds up app launches)
-                # 3. Interactive CLI Tools
+                # 1. Hardware
+                "thermald",  # Intel thermal management
+                "smartmontools",  # SSD health monitoring
+                # 2. Optimization
+                "haveged",  # Entropy daemon (Speed)
+                "preload",  # Application readahead
+                # 3. CLI Tools
                 "tmux",  # Terminal multiplexer
-                "neovim",  # Extensible text editor
+                "neovim",  # Terminal text editor
             ],
             "UTILITY": [
-                # 1. File Management & Navigation
-                "mc",  # Midnight Commander (Classic dual-pane manager)
-                "tree",  # Visual directory structure
-                "fzf",  # Fuzzy finder (Essential for terminal speed)
-                "eza",  # Modern 'ls' replacement with colors/icons
-                "zoxide",  # Smart 'cd' replacement (Recommended addition)
-                # 2. Disk & System Analysis
-                "duf",  # Modern 'df' replacement (Disk usage overview)
-                "ncdu",  # Interactive 'du' (Find large folders quickly)
-                "gdisk",  # GPT fdisk (Crucial for modern SSD partitioning)
-                # 3. Text Processing & Viewing
-                "bat",  # Modern 'cat' with syntax highlighting
-                "ripgrep",  # Modern 'grep' (Blazing fast)
-                "jq",  # JSON processor (Essential for dev work)
-                # 4. System Configuration
-                "dconf-cli",  # CLI access to system settings
-                "dconf-editor",  # GUI access to system settings (The one we used earlier)
+                # 1. Navigation
+                "mc",  # Dual-pane file manager
+                "tree",  # Directory tree visualizer
+                "fzf",  # Fuzzy finder (Command-line)
+                "eza",  # Enhanced 'ls' with colors
+                "zoxide",  # Fast directory jumper ('z')
+                # 2. Disk Analysis
+                "duf",  # User-friendly 'df' (Disk info)
+                "ncdu",  # Interactive disk usage analyzer
+                "gdisk",  # GPT partition table manipulator
+                # 3. Text & Data
+                "bat",  # Syntax-highlighting 'cat'
+                "ripgrep",  # Blazing fast 'grep' ('rg')
+                "jq",  # Command-line JSON processor
+                # 4. Configuration
+                "dconf-cli",  # Backend settings access
+                "dconf-editor",  # Graphical settings editor
             ],
             "ANALYZE": [
-                # 1. Real-time System Monitors (Visual)
-                "btop",  # Modern, high-detail resource monitor (Your primary)
-                "htop",  # The classic standard (Good fallback)
-                "nmon",  # Performance monitor for CPU/Disk/Network/NFS
-                # 2. Specialized Monitoring
-                "iotop",  # Monitor disk I/O per process (Find what's slowing the SSD)
-                # 3. Hardware Information
-                "hwinfo",  # Detailed hardware identification
-                "inxi",  # Powerful system/driver summary (Essential for Mint)
+                # 1. Monitoring
+                "btop",  # Modern dashboard monitor
+                "htop",  # Interactive process viewer
+                "nmon",  # Comprehensive system stats
+                # 2. Specialized
+                "iotop",  # Disk I/O monitor by process
+                # 3. Hardware
+                "hwinfo",  # Hardware probing tool
+                "inxi",  # Full hardware/driver summary
             ],
             "NETWORK": [
-                # 1. Critical Infrastructure & Certificates
-                "ca-certificates",  # Must be first: validates SSL for all other tools
-                "net-tools",  # Provides 'ifconfig' and 'netstat' for diagnostics
-                # 2. Data Retrieval & Speed Testing
-                "curl",  # Modern transfer tool (Used in your VS Code logic)
-                "wget",  # Classic downloader
-                "speedtest-cli",  # Quick terminal-based speed checks (Recommended)
-                # 3. Secure Shell (SSH) Suite
-                "openssh-client",  # To connect to your servers
-                "openssh-server",  # To allow remote access to this laptop
-                "openssh-sftp-server",  # Secure file transfer support
+                # 1. Base
+                "ca-certificates",  # SSL/TLS validation (Critical)
+                "net-tools",  # Classic 'ifconfig' utilities
+                # 2. Transfer & Speed
+                "curl",  # Versatile data transfer tool
+                "wget",  # Standard file downloader
+                "speedtest-cli",  # Terminal speed test
+                # 3. Remote Access
+                "openssh-client",  # SSH client binary
+                "openssh-server",  # SSH daemon for remote login
+                "openssh-sftp-server",  # Secure file transfer engine
             ],
             "SPELLING": [
-                # 1. Engines & Integration (The "Bridge")
-                "libenchant-2-2",  # The bridge between apps and dictionaries
+                # 1. Frameworks
+                "libenchant-2-2",  # App-to-dictionary bridge
                 "hunspell",  # Modern standard engine
                 "aspell",  # Classic CLI engine
-                # 2. German (DE) Support
-                "hunspell-de-de-frami",  # Primary German dictionary
-                "aspell-de",  # CLI German dictionary
+                # 2. German (DE)
+                "hunspell-de-de-frami",  # Primary German dict
+                "aspell-de",  # CLI German dict
                 "myspell-dictionary-de",  # Legacy German support
                 "mythes-de",  # German Thesaurus
                 "hyphen-de",  # German Hyphenation
-                # 3. English (EN) Support
-                "hunspell-en-us",  # Primary English dictionary
-                "aspell-en",  # CLI English dictionary
+                # 3. English (EN)
+                "hunspell-en-us",  # Primary English dict
+                "aspell-en",  # CLI English dict
                 "mythes-en-us",  # English Thesaurus
                 "hyphen-en-us",  # English Hyphenation
             ],
             "ACCESSORY": [
-                # 1. System Styling & Theme Consistency (Crucial for XFCE)
-                "adwaita-qt",  # Makes Qt5 apps match your GTK theme
-                "adwaita-qt6",  # Makes Qt6 apps match your GTK theme
-                "qt5ct",  # Qt5 configuration tool (Recommended addition)
-                "qt6ct",  # Qt6 configuration tool (Recommended addition)
-                # 2. Development & File Utilities
-                "meld",  # Visual diff and merge tool (Excellent for dev)
-                # 3. Media & Communication
-                "cheese",  # Webcam viewer (Perfect for testing hardware)
-                "transmission-gtk",  # BitTorrent client (The GTK version fits XFCE)
+                # 1. Themes (Qt/GTK Sync)
+                "adwaita-qt",  # Qt5 theme matching
+                "adwaita-qt6",  # Qt6 theme matching
+                "qt5ct",  # Qt5 config utility
+                "qt6ct",  # Qt6 config utility
+                # 2. Productivity
+                "meld",  # Visual diff/merge tool
+                # 3. Media
+                "cheese",  # Webcam tester
+                "transmission-gtk",  # Lightweight Torrent client
             ],
             "OFFICE": [
-                # 1. LibreOffice Core & UI Integration
-                "libreoffice",  # The main office suite
-                "libreoffice-gtk3",  # Makes it look native in XFCE
-                "libreoffice-style-sifr",  # Clean, flat icon set (Good for XFCE)
-                "libreoffice-l10n-de",  # German language pack (Recommended)
-                # 2. Document Conversion & Markdown
-                "pandoc",  # The "universal" document converter
-                # 3. LaTeX / Scientific Publishing (The Heavy Part)
-                "texlive-full",  # Complete LaTeX distribution (~5GB)
+                # 1. LibreOffice
+                "libreoffice",  # Full office suite
+                "libreoffice-gtk3",  # XFCE UI integration
+                "libreoffice-style-sifr",  # Flat icon theme
+                "libreoffice-l10n-de",  # German UI translation
+                # 2. Publishing
+                "pandoc",  # Document converter
+                "texlive-full",  # Comprehensive LaTeX (~5GB)
             ],
             "GRAPHIC": [
-                # 1. Raster Image Editing (GIMP Suite)
-                "gimp",  # The core image editor
-                "gimp-data-extras",  # Additional brushes, gradients, and patterns
-                "gimp-plugin-registry",  # Huge collection of essential plugins (Recommended)
-                "gimp-help-de",  # German help files (Recommended)
-                # 2. Vector Illustration (Inkscape Suite)
-                "inkscape",  # The core vector editor
-                # 3. Hardware & Library Support
-                "libwacom-common",  # Drawing tablet support (Essential for graphics)
+                # 1. Raster (GIMP)
+                "gimp",  # GNU Image Manipulation Program
+                "gimp-data-extras",  # Brushes and patterns
+                "gimp-plugin-registry",  # Essential plugin bundle
+                "gimp-help-de",  # German GIMP manuals
+                # 2. Vector (Inkscape)
+                "inkscape",  # Vector graphics editor
+                # 3. Hardware
+                "libwacom-common",  # Wacom/Tablet support
             ],
             "MULTIMEDIA": [
-                # 1. High-Performance Playback (MPV Suite)
-                "mpv",  # Minimalist, high-performance player (Best for Intel)
-                "yt-dlp",  # CLI tool to stream/download web video (Recommended)
-                # 2. Universal Playback (VLC Suite)
-                "vlc",  # The "all-in-one" media player
-                "vlc-l10n",  # Language localization for VLC
-                "vlc-plugin-pipewire",  # Native PipeWire support (Essential for Mint 22)
-                "vlc-plugin-jack",  # Jack audio support
-                "vlc-plugin-fluidsynth",  # MIDI playback support
-                "vlc-plugin-svg",  # Scalable Vector Graphics support
-                "vlc-plugin-visualization",  # Visualizer support
-                # 3. Audio Editing & Tools
-                "audacity",  # Multi-track audio editor
-                "pavucontrol",  # PulseAudio/PipeWire volume control (The Mixer)
+                # 1. Playback
+                "mpv",  # Fast, GPU-accelerated player
+                "yt-dlp",  # YouTube/Video downloader
+                # 2. VLC Suite
+                "vlc",  # Universal media player
+                "vlc-l10n",  # German UI for VLC
+                "vlc-plugin-pipewire",  # Native PipeWire audio
+                "vlc-plugin-jack",  # JACK audio support
+                "vlc-plugin-fluidsynth",  # MIDI synth support
+                "vlc-plugin-svg",  # SVG icon support
+                "vlc-plugin-visualization",  # Audio visualizers
+                # 3. Audio Tools
+                "audacity",  # Waveform audio editor
+                "pavucontrol",  # PipeWire/Pulse Mixer
             ],
             "CODEC": [
-                # 1. Core Framework & Multi-purpose Tools
-                "ffmpeg",  # The universal multimedia engine (Must be first)
-                "libavif-bin",  # AVIF image format tools
-                "libwebm-tools",  # WebM container tools
-                "libwebm1",  # WebM shared library
-                # 2. Video Encoders (High Performance)
-                "dav1d",  # AV1 decoder (Fastest for Intel CPUs)
-                "davs2",  # AVS2 video decoder
-                "rav1e",  # AV1 encoder
-                "svt-av1",  # Intel-optimized AV1 encoder (Best for your CPU)
-                "x264",  # Standard H.264 encoder
-                "x265",  # Standard H.265/HEVC encoder
-                # 3. Audio Encoders
-                "aften",  # AC3 audio encoder
-                "faac",  # AAC audio encoder
-                "fdkaac",  # CLI for FDK AAC
-                "libfdk-aac2",  # High-quality AAC library
-                "lame",  # Classic MP3 encoder
-                "speex",  # Speech-optimized codec
-                # 4. Container & Metadata Utilities
-                "mkvtoolnix",  # MKV manipulation tools
-                "ogmtools",  # OGG/OGM manipulation tools
+                # 1. Frameworks
+                "ffmpeg",  # The Swiss-army knife for media
+                "libavif-bin",  # AVIF image support
+                "libwebm-tools",  # WebM processing
+                "libwebm1",  # WebM runtime library
+                # 2. Video
+                "dav1d",  # Ultra-fast AV1 decoder
+                "davs2",  # AVS2 support
+                "rav1e",  # Rust-based AV1 encoder
+                "svt-av1",  # Intel-optimized AV1 (Best for you)
+                "x264",  # H.264/AVC standard
+                "x265",  # H.265/HEVC standard
+                # 3. Audio
+                "aften",  # AC3 toolset
+                "faac",  # AAC encoder
+                "fdkaac",  # FDK-AAC CLI
+                "libfdk-aac2",  # FDK-AAC library
+                "lame",  # MP3 encoder
+                "speex",  # Speech-specific codec
+                # 4. Utilities
+                "mkvtoolnix",  # MKV editor (mkvmerge)
+                "ogmtools",  # OGG/OGM stream tools
             ],
             "COMPRESSION": [
-                # 1. Core System Standards
-                "tar",  # The foundational archiving tool
+                # 1. Standards
+                "tar",  # Standard Unix archiver
                 "gzip",  # Standard compression
-                "bzip2",  # Classic high-compression
-                "zip",  # Universal compatibility
-                "unzip",  # Universal extraction
-                # 2. Parallel & High-Performance (Best for your Intel CPU)
-                "pigz",  # Parallel GZIP (Fastest for daily use)
-                "pbzip2",  # Parallel BZIP2
-                "lbzip2",  # Alternative Parallel BZIP2
-                "pixz",  # Parallel XZ
-                "zstd",  # Modern, ultra-fast compression (standard for Mint 22)
-                "lz4",  # Extreme speed compression
-                "lrzip",  # Long-range ZIP (Great for massive files)
-                # 3. Modern & Specialized Formats
-                "7zip",  # Modern 7z standard
-                "zpaq",  # Maximum compression ratio
-                "lzip",  # LZMA-based format
-                "plzip",  # Parallel LZIP
+                "bzip2",  # High compression legacy
+                "zip",  # Universal Windows compatibility
+                "unzip",  # Standard extractor
+                # 2. Parallel (Multi-threaded)
+                "pigz",  # Multi-core GZIP (Fast!)
+                "pbzip2",  # Multi-core BZIP2
+                "lbzip2",  # Fast multi-core BZIP2
+                "pixz",  # Parallel XZ with indexing
+                "zstd",  # Modern Facebook-speed standard
+                "lz4",  # Fastest real-time compression
+                "lrzip",  # For very large archives
+                # 3. Specialized
+                "7zip",  # 7-Zip (Modern p7zip)
+                "zpaq",  # Maximum data density
+                "lzip",  # Error-resilient LZMA
+                "plzip",  # Multi-core LZIP
                 "tarlz",  # Tar with LZIP support
-                "lzop",  # Fast LZO compression
-                # 4. Legacy, Proprietary & Extraction Tools
-                "unar",  # The "Universal" extractor (Must-have)
-                "unrar",  # For RAR files (Non-free version)
-                "rar",  # For creating RAR files
-                "cabextract",  # For Windows .cab files
-                "lhasa",  # For old .lzh files
-                "unace",  # For old .ace files
-                "dar",  # Disk Archive (For backups)
-                "par2",  # Parchive (For repairing corrupted archives)
+                "lzop",  # Low-CPU overhead LZO
+                # 4. Legacy & Windows
+                "unar",  # Universal extractor (Best for XFCE)
+                "unrar",  # RAR extraction support
+                "rar",  # RAR creation support
+                "cabextract",  # Microsoft .cab support
+                "lhasa",  # LZH/LHA support
+                "unace",  # ACE support
+                "dar",  # Disk Archive (Backups)
+                "par2",  # Data repair/redundancy
             ],
             "DEVELOPMENT_COMPILER": [
-                # Build Tools
-                "build-essential",  # make, gcc, libc
-                "cmake",  # Meta-build system
-                "cmake-format",  # Formatter for CMake
-                "ninja-build",  # High-performance build tool
-                # Clang/LLVM Suite
-                "clang",  # Compiler
-                "clang-format",  # Formatter
-                "clang-tidy",  # Linter
-                "clang-tools",  # Extra utilities
-                "lldb",  # Debugger
-                # Libraries & Analysis
-                "libmagic-dev",  # File type identification
-                "libmagickwand-dev",  # Image manipulation
-                "libssl-dev",  # Crypto/Networking
-                "valgrind",  # Memory profiling
+                "build-essential",  # Standard C/C++ toolchain (make, gcc)
+                "cmake",  # Cross-platform build automation
+                "cmake-format",  # Formatter for CMake scripts
+                "ninja-build",  # Fast alternative to 'make'
+                "clang",  # LLVM-based C/C++ compiler
+                "clang-format",  # Standard C++ code formatter
+                "clang-tidy",  # Static analyzer for C++
+                "clang-tools",  # Extra LLVM development utilities
+                "lldb",  # High-performance debugger
+                "libmagic-dev",  # Development files for file-type detection
+                "libmagickwand-dev",  # ImageMagick C-API library
+                "libssl-dev",  # Header files for SSL/TLS
+                "valgrind",  # Memory leak and profiling tool
             ],
             "DEVELOPMENT_PYTHON": [
-                # Environment & Runtime
-                "pipx",  # Isolated CLI tool installer (Safe for Mint 22)
-                "python-is-python3",  # Symlink provider
-                "python3-gpg",  # GPG bindings for your script
-                "python3-pip",  # Package installer
-                "python3-venv",  # Virtual environments
-                # Project Management
-                "pipenv",  # Dependency management
-                "python3-poetry",  # Modern project management
-                # Testing & Linting
-                "black",  # Uncompromising formatter
-                "python3-autopep8",  # Style guide checker
-                "python3-flake8",  # Logic linter
-                "python3-pytest",  # Testing framework
+                "pipx",  # Isolated CLI tool installer (Safe for Mint)
+                "python-is-python3",  # Maps 'python' command to python3
+                "python3-gpg",  # GPG library for your script's logic
+                "python3-pip",  # Standard package installer
+                "python3-venv",  # Native virtual environment support
+                "pipenv",  # Deterministic dependency management
+                "python3-poetry",  # Modern project/package manager
+                "black",  # Uncompromising code formatter
+                "python3-autopep8",  # PEP 8 style guide formatter
+                "python3-flake8",  # Code linter for syntax/style
+                "python3-pytest",  # Advanced testing framework
             ],
             "DEVELOPMENT_SHELL": [
-                "expect",  # Interactive automation
-                "shellcheck",  # Script analyzer
-                "shfmt",  # Script formatter
+                "expect",  # Automation for interactive CLI prompts
+                "shellcheck",  # Static analysis/linter for scripts
+                "shfmt",  # Shell script formatter
             ],
             "DEVELOPMENT_DOCS": [
-                "bash-doc",  # Bash manuals
-                "linux-doc",  # Kernel documentation
-                "python3-doc",  # Python 3 manuals
-                "zeal",  # API Documentation browser
+                "bash-doc",  # Local documentation for Bash
+                "linux-doc",  # Deep Linux kernel manuals
+                "python3-doc",  # Local Python 3 reference
+                "zeal",  # Offline API documentation browser
             ],
             "DEVELOPMENT_JAVA": [
-                "default-jdk",  # Standard OpenJDK
+                "default-jdk",  # Standard OpenJDK for Java dev
             ],
         }
-
         setup.install(categories)
 
         logger.section("FLATPAK MANAGEMENT")
@@ -604,6 +600,7 @@ def main():
     if args.system:
         logger.section("SYSCTL")
         setup.apply_sysctl_optimizations()
+
         logger.section("JOURNALD")
         setup.logger.subsection("Configuring System Journal")
         setup.set_journald_property("Storage", "persistent")
@@ -611,6 +608,7 @@ def main():
         setup.set_journald_property("SystemMaxFileSize", "50M")
         setup.set_journald_property("SyncIntervalSec", "5m")
         logger.success("Journald configuration updated")
+
         logger.section("SERVICES")
         services = [
             "systemd-sysctl",
