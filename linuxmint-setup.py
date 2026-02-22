@@ -307,11 +307,11 @@ def main():
 
         categories = {
             "VIM": [
-                "vim-common",
-                "vim-tiny",
+                "vim*",
             ],
             "UNWANTED": [
                 "gcolor3",
+                "thunderbird*",
             ],
         }
         setup.remove(categories)
@@ -405,6 +405,7 @@ def main():
                 "openssh-client",  # SSH client binary
                 "openssh-server",  # SSH daemon for remote login
                 "openssh-sftp-server",  # Secure file transfer engine
+                "sshfs",  # Filesystem client based on SSH File Transfer Protocol
             ],
             "SPELLING": [
                 # 1. Frameworks
